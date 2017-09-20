@@ -6,27 +6,27 @@ USE chat;
 DROP TABLE IF EXISTS messages;
 CREATE TABLE messages (
   /* Describe your table here.*/
-  id INTEGER PRIMARY KEY,
-  user TEXT NOT NULL,
-  roomname TEXT NOT NULL,
-  -- createdAt DATETIME,
-  messageText TEXT NOT NULL
-  -- FOREIGN KEY(user) REFERENCES users(id),
-  -- FOREIGN KEY(roomname) REFERENCES roomnames(id)
+  id int NOT NULL AUTO_INCREMENT,
+  userid int NOT NULL,
+  text varchar(200),
+  roomid int NOT NULL,
+  PRIMARY KEY(ID)
 );
 
 /* Create other tables and define schemas for them here! */
--- DROP TABLE IF EXISTS users;
--- CREATE TABLE users (
---   id INTEGER PRIMARY KEY,
---   username TEXT NOT NULL
--- );
+DROP TABLE IF EXISTS users;
+CREATE TABLE users (
+  id int NOT NULL AUTO_INCREMENT,
+  username varchar(40) NOT NULL,
+  PRIMARY KEY(ID)
+);
 
--- DROP TABLE IF EXISTS roomnames;
--- CREATE TABLE roomnames (
---   id INTEGER PRIMARY KEY,
---   roomname TEXT NOT NULL
--- );
+DROP TABLE IF EXISTS rooms;
+CREATE TABLE rooms (
+  id int NOT NULL AUTO_INCREMENT,
+  roomname varchar(20) NOT NULL,
+  PRIMARY KEY(ID)
+);
 
 -- ALTER TABLE messages ADD FOREIGN KEY (user) REFERENCES users (id);
 -- ALTER TABLE messages ADD FOREIGN KEY (roomname) REFERENCES roomnames (id);

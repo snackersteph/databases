@@ -2,32 +2,30 @@ var db = require('../db');
 
 module.exports = {
   messages: {
-    get: function (request, cb) {
+    get: function (cb) {
       // query with SELECT string and function(err, results)
-      db.query('select * from messages;', 
+      var queryString = 'select messages.id, users.username, messages.text, rooms.roomname from messages m left outer join users u on (m.userid = u.id) left outer join rooms r on (m.roomid = r.id) order by m.id desc;';
+      db.query(queryString, 
         function (err, results) {
           if (err) {
             console.log('Error getting messages');
           } else {
-            cb(results);
+            cb(err, results);
           }
         });
     }, // a function which produces all the messages
-    post: function (request, cb) {
+    post: function (params, cb) {
+      // [req.body[username], req.body[message], req.body[roomname]]
       
-      // Does the user exist?
-      
-      // If yes, retrieve preset user id
-      // If not, set a new id
+      var queryString = 'insert into messages (userid, text, roomid) values((select id from users where username = ?), ?, (select id from rooms where roomname = ?));';
 
-      // Repeat insert for roomnames table
-
-      // Pass roomname id as request.roomname
-      // Pass user id as request.username
-
-      db.query('INSERT INTO messages (id, user, roomname, createdAt, messageText) VALUES (' + request.id + ', ' + request.username + ', ' + request.roomname + ', ' + request.text + ')', 
-        function() {
-          cb(response);
+      db.query(queryString, params, 
+        function(err, results) {
+          if (err) {
+            console.log('Error posting messages', err);
+          } else {
+            cb(err, results);
+          }
         });
     }
 
@@ -36,18 +34,54 @@ module.exports = {
 
   users: {
     // Ditto as above.
-    get: function (request, cb) {
-      db.query('SELECT * FROM messages where messages.user = request.user',
+    get: function (cb) {
+      var queryString = 'SELECT * FROM users';
+      db.query(queryString,
         function(err, results) {
           if (err) {
             console.log('Error getting messages');
           } else {
-            cb(results);
+            cb(err, results);
           }
         }      
       );
     },
-    post: function () {}
+    post: function (params, cb) {
+      var queryString = 'INSERT INTO users (username) values (?)';
+      db.query(queryString, params, function(err, results) {
+        if (err) {
+          console.log('Error posting users');
+        } else {
+          cb(err, results);
+        }
+      });
+    }
+  },
+  
+  rooms: {
+    // Ditto as above.
+    get: function (cb) {
+      var queryString = 'SELECT * FROM rooms';
+      db.query( queryString,
+        function(err, results) {
+          if (err) {
+            console.log('Error getting room');
+          } else {
+            cb(err, results);
+          }
+        }      
+      );
+    },
+    post: function (params, cb) {
+      var queryString = 'INSERT INTO rooms (roomname) values (?)';
+      db.query(queryString, params, function(err, results) {
+        if (err) {
+          console.log('Error posting room');
+        } else {
+          cb(err, results);
+        }
+      });
+    }
   }
 };
 

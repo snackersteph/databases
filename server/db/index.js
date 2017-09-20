@@ -9,12 +9,6 @@ var dbConnection = mysql.createConnection({
   password: 'plantlife'
 });
 
-dbConnection.connect(function(err) {
-  if (err) {
-    console.log('Error reaching database', err);
-  } else {
-    console.log('Connected to mySQL');
-  }
-});
+dbConnection.connect();
 
 module.exports = dbConnection;
