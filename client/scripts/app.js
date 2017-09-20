@@ -26,7 +26,7 @@ var app = {
     app.$roomSelect.on('change', app.handleRoomChange);
 
     // Fetch previous messages
-    app.startSpinner();
+    //app.startSpinner();
     app.fetch(false);
 
     // Poll for new messages
@@ -36,7 +36,7 @@ var app = {
   },
 
   send: function(message) {
-    app.startSpinner();
+    //app.startSpinner();
 
     // POST the message to the server
     $.ajax({
@@ -61,11 +61,14 @@ var app = {
     $.ajax({
       url: app.server,
       type: 'GET',
-      data: { order: '-createdAt' },
+      //data: { order: '-createdAt' },
       contentType: 'application/json',
       success: function(data) {
         // Don't bother if we have nothing to work with
-        if (!data.results || !data.results.length) { return; }
+        if (!data.results || !data.results.length) { 
+          app.stopSpinner();
+          return; 
+        }
 
         // Store messages for caching later
         app.messages = data.results;

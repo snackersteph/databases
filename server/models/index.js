@@ -8,7 +8,7 @@ module.exports = {
       db.query(queryString, 
         function (err, results) {
           if (err) {
-            console.log('Error getting messages');
+            console.log('Error getting messages', err);
           } else {
             cb(err, results);
           }
@@ -16,17 +16,36 @@ module.exports = {
     }, // a function which produces all the messages
     post: function (params, cb) {
       // [req.body[username], req.body[message], req.body[roomname]]
-      
-      var queryString = 'insert into messages (userid, text, roomid) values((select id from users where username = ?), ?, (select id from rooms where roomname = ?));';
+      console.log(params[0]);
+      db.query('insert into users (username) select "' + params[0] + '" from dual where not exists (select * from users where username = "' + params[0] + '");', function(err, results) {
+        if (err) {
+          console.log('error adding user', err);
+        } else {
+          // add room to rooms table
+          db.query('insert into users (username) select "' + params[2] + '" from dual where not exists (select * from users where username = "' + params[2] + '");', function(err, results) { 
+            if (err) {
+              console.log('error adding room', err);
+            } else {
+              var queryString = 'insert into messages (userid, text, roomid) values((select id from users where username = "' + params[0] + '"), "' + params[1] + '" , (select id from rooms where roomname = "' + params[2] + '"));';
 
-      db.query(queryString, params, 
-        function(err, results) {
-          if (err) {
-            console.log('Error posting messages', err);
-          } else {
-            cb(err, results);
-          }
-        });
+              db.query(queryString, params, 
+                function(err, results) {
+                  if (err) {
+                    console.log('Error posting messages', err);
+                  } else {
+                    cb(err, results);
+                  }
+                });
+                
+            }
+            
+          });
+        }
+      
+      });
+            
+            
+      
     }
 
       // a function which can be used to insert a message into the database
